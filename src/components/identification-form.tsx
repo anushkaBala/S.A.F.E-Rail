@@ -199,7 +199,7 @@ export function IdentificationForm() {
         </CardFooter>
       </Card>
 
-      <Card className="flex flex-col bg-deep-blue text-deep-blue-foreground">
+      <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>2. Analysis Result</CardTitle>
           <CardDescription>The result of the video analysis will appear here.</CardDescription>
