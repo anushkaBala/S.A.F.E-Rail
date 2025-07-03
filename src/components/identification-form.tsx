@@ -124,7 +124,7 @@ export function IdentificationForm() {
       <Card className="bg-success text-success-foreground">
         <CardHeader>
           <CardTitle>1. Child Details &amp; Photo</CardTitle>
-          <CardDescription>Select an image and provide details to identify a child.</CardDescription>
+          <CardDescription className="text-success-foreground/80">Select an image and provide details to identify a child.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
