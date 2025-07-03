@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const MatchChildInVideoInputSchema = z.object({
+const MatchChildInVideoInputSchema = z.object({
   videoDataUri: z
     .string()
     .describe(
@@ -26,7 +26,7 @@ export const MatchChildInVideoInputSchema = z.object({
 });
 export type MatchChildInVideoInput = z.infer<typeof MatchChildInVideoInputSchema>;
 
-export const MatchChildInVideoOutputSchema = z.object({
+const MatchChildInVideoOutputSchema = z.object({
   isMatchFound: z.boolean().describe('Whether a match for the child was found in the video.'),
   matchConfidence: z
     .number()
