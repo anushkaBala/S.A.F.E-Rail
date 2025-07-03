@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -128,7 +129,7 @@ export function IdentificationForm() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="age">Age</Label>
-            <Input id="age" type="number" placeholder="Enter estimated age" value={age} onChange={(e) => setAge(e.target.value)} />
+            <Input id="age" type="text" inputMode="numeric" placeholder="Enter estimated age" value={age} onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ''))} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="gender">Gender</Label>
