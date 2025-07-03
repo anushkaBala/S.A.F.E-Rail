@@ -19,7 +19,7 @@ const chartData = [
 const chartConfig = {
   detections: {
     label: "Detections",
-    color: "hsl(var(--primary))",
+    color: "hsl(147, 89%, 41%)",
   },
 }
 

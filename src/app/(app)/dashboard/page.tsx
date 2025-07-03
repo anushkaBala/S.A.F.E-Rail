@@ -138,15 +138,6 @@ export default function DashboardPage() {
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Detections Over Time</CardTitle>
-            <CardDescription>Recent unaccompanied child detections across the network.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DetectionChart />
-          </CardContent>
-        </Card>
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Recent Alerts</CardTitle>
@@ -154,6 +145,15 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <AlertList alerts={alerts} onAcknowledge={handleAcknowledge} onDismiss={handleDismiss} onViewDetails={handleViewDetails} />
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Detections Over Time</CardTitle>
+            <CardDescription>Recent unaccompanied child detections across the network.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DetectionChart />
           </CardContent>
         </Card>
       </div>
