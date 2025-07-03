@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 
 const pathToTitle: { [key: string]: string } = {
@@ -57,7 +57,6 @@ export function AppHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative w-8 h-8 rounded-full">
               <Avatar className="w-8 h-8">
-                <AvatarImage src="https://placehold.co/40x40.png" alt="Indian train" data-ai-hint="indian train" />
                 <AvatarFallback>A</AvatarFallback>
               </Avatar>
             </Button>
