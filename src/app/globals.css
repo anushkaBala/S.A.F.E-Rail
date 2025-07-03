@@ -24,7 +24,7 @@ body {
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --success: 147 50% 41%;
+    --success: 147 50% 31%;
     --success-foreground: 0 0% 98%;
     --boarding: 147 50% 81%;
     --boarding-foreground: 224 71% 4%;
@@ -65,7 +65,7 @@ body {
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --success: 147 50% 41%;
+    --success: 147 50% 31%;
     --success-foreground: 0 0% 98%;
     --boarding: 147 50% 61%;
     --boarding-foreground: 224 71% 4%;
@@ -85,8 +85,8 @@ body {
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 215 28% 17%;
     --sidebar-ring: 0 0% 83.1%;
-    --cctv-main: 220 40% 15%;
-    --cctv-main-foreground: 0 0% 98%;
+    --cctv-main: 220 80% 95%;
+    --cctv-main-foreground: 224 71% 4%;
   }
 }
 
