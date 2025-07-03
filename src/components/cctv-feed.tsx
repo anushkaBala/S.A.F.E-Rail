@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, Video } from 'lucide-react';
-import { analyzeCctvFootage, AnalyzeCctvFootageOutput } from '@/ai/flows/analyze-cctv-footage';
+import { Loader2, Video, CheckCircle } from 'lucide-react';
+import { useAnalysis } from '@/context/AnalysisContext';
+import Link from 'next/link';
+
 
 type CctvFeedProps = {
   title: string;
@@ -22,9 +24,11 @@ export function CctvFeed({ title, location }: CctvFeedProps) {
   
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeCctvFootageOutput | null>(null);
+  const { setVideoToAnalyze, videoToAnalyze, location: analysisLocation } = useAnalysis();
+
+  const isThisVideoSetForAnalysis = videoToAnalyze && analysisLocation === location;
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -60,45 +64,35 @@ export function CctvFeed({ title, location }: CctvFeedProps) {
     if (file) {
       setUploadedFile(file);
       setUploadedVideoUrl(URL.createObjectURL(file));
-      setAnalysisResult(null);
+      // Reset analysis state if a new video is uploaded
+      if(analysisLocation === location) {
+        setVideoToAnalyze(null, null);
+      }
     }
   };
 
-  const handleAnalyzeVideo = async () => {
+  const handleSetVideoForMatching = () => {
     if (!uploadedFile) return;
 
-    setLoading(true);
-    setAnalysisResult(null);
+    setIsProcessingFile(true);
     const reader = new FileReader();
     reader.readAsDataURL(uploadedFile);
-    reader.onload = async () => {
-      try {
-        const cctvFootageDataUri = reader.result as string;
-        const timestamp = new Date().toISOString();
-        const result = await analyzeCctvFootage({ cctvFootageDataUri, location, timestamp });
-        setAnalysisResult(result);
-        if(result.unaccompaniedChildrenDetected) {
-            toast({
-                title: "Alert: Unaccompanied Child Detected!",
-                description: `Detected ${result.numberOfChildren} child(ren) at ${result.location}.`,
-                variant: "destructive"
-            });
-        } else {
-            toast({
-                title: "Analysis Complete",
-                description: `No unaccompanied children were detected.`,
-            });
-        }
-      } catch (error) {
-        console.error('Analysis failed:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Analysis Failed',
-          description: 'Could not analyze the uploaded video.',
-        });
-      } finally {
-        setLoading(false);
-      }
+    reader.onload = () => {
+      const videoDataUri = reader.result as string;
+      setVideoToAnalyze(videoDataUri, location);
+      setIsProcessingFile(false);
+      toast({
+        title: "Video Ready for Analysis",
+        description: (
+          <span>
+            The video from {location} is set. Go to the{' '}
+            <Link href="/identification" className="underline font-bold">
+              Child Identification
+            </Link>{' '}
+            page to find a match.
+          </span>
+        ),
+      });
     };
     reader.onerror = (error) => {
         console.error('File reading failed:', error);
@@ -107,7 +101,7 @@ export function CctvFeed({ title, location }: CctvFeedProps) {
             title: 'File Error',
             description: 'Could not read the uploaded file.',
         });
-        setLoading(false);
+        setIsProcessingFile(false);
     }
   };
 
@@ -153,23 +147,10 @@ export function CctvFeed({ title, location }: CctvFeedProps) {
                 <video src={uploadedVideoUrl} className="w-full h-full object-cover" controls />
               </div>
             )}
-            <Button onClick={handleAnalyzeVideo} disabled={!uploadedFile || loading} className="w-full">
-              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Video className="w-4 h-4 mr-2" />}
-              {loading ? 'Analyzing...' : 'Analyze Uploaded Video'}
+            <Button onClick={handleSetVideoForMatching} disabled={!uploadedFile || isProcessingFile || isThisVideoSetForAnalysis} className="w-full">
+              {isProcessingFile ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (isThisVideoSetForAnalysis ? <CheckCircle className="w-4 h-4 mr-2" /> : <Video className="w-4 h-4 mr-2" />)}
+              {isProcessingFile ? 'Processing...' : (isThisVideoSetForAnalysis ? 'Video Set for Matching' : 'Use This Video for Matching')}
             </Button>
-            {analysisResult && (
-                <Card className="mt-4 bg-muted/50">
-                    <CardHeader>
-                        <CardTitle className="text-base">Analysis Result</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-sm space-y-2">
-                         <p><strong>Unaccompanied Children:</strong> {analysisResult.unaccompaniedChildrenDetected ? `Yes (${analysisResult.numberOfChildren})` : 'No'}</p>
-                        <p><strong>Location:</strong> {analysisResult.location}</p>
-                        <p><strong>Timestamp:</strong> {new Date(analysisResult.timestamp).toLocaleString()}</p>
-                        <p><strong>Confidence:</strong> {Math.round(analysisResult.confidenceScore * 100)}%</p>
-                    </CardContent>
-                </Card>
-            )}
           </TabsContent>
         </Tabs>
       </CardContent>

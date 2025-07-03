@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/identify-child-from-upload.ts';
 import '@/ai/flows/analyze-cctv-footage.ts';
+import '@/ai/flows/match-child-in-video.ts';
