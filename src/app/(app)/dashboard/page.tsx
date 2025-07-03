@@ -12,6 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { TrainFront, Users, Play, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateDashboardImage } from '@/ai/flows/generate-dashboard-image';
+import { generatePersonImage, type GeneratePersonImageInput } from '@/ai/flows/generate-person-image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const initialAlerts: Alert[] = [
   { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
@@ -30,7 +33,20 @@ const trainData = [
     { name: 'Sanghamitra Exp', platform: '5', departure: '17:00', status: 'On Time', variant: 'success' as const },
 ];
 
-const missingPersonsData = [
+type MissingPerson = {
+  name: string;
+  gender: 'Female' | 'Male';
+  age: number;
+  spectacles: 'Yes' | 'No';
+  parentName: string;
+  parentPhone: string;
+  state: string;
+  city: string;
+  imageUrl?: string;
+  imageLoading?: boolean;
+};
+
+const initialMissingPersonsData: MissingPerson[] = [
   { name: 'Khushi Sharma', gender: 'Female', age: 8, spectacles: 'No', parentName: 'Rakesh Sharma', parentPhone: '9876543210', state: 'Maharashtra', city: 'Mumbai' },
   { name: 'Soham Vari', gender: 'Male', age: 6, spectacles: 'Yes', parentName: 'Priya Vari', parentPhone: '8765432109', state: 'Delhi', city: 'New Delhi' },
   { name: 'Harbhajan Singh', gender: 'Male', age: 10, spectacles: 'No', parentName: 'Manjeet Singh', parentPhone: '9988776655', state: 'Punjab', city: 'Amritsar' },
@@ -44,6 +60,8 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [missingPersons, setMissingPersons] = useState<MissingPerson[]>(initialMissingPersonsData);
+
 
   useEffect(() => {
     async function loadImage() {
@@ -58,7 +76,6 @@ export default function DashboardPage() {
           title: "Image Generation Failed",
           description: "Could not load the dashboard's hero image.",
         });
-        // Fallback to placeholder if generation fails
         setHeroImageUrl("https://placehold.co/1280x720.png");
       } finally {
         setIsImageLoading(false);
@@ -66,6 +83,39 @@ export default function DashboardPage() {
     }
     loadImage();
   }, [toast]);
+
+  useEffect(() => {
+    async function loadPersonImages() {
+        setMissingPersons(prev => prev.map(p => ({ ...p, imageLoading: true })));
+
+        const imagePromises = initialMissingPersonsData.map(person => {
+            const input: GeneratePersonImageInput = {
+                age: person.age,
+                gender: person.gender,
+                wearsSpectacles: person.spectacles === 'Yes'
+            };
+            return generatePersonImage(input);
+        });
+
+        const results = await Promise.allSettled(imagePromises);
+
+        const updatedPersons = initialMissingPersonsData.map((person, index) => {
+            const result = results[index];
+            if (result.status === 'fulfilled') {
+                return { ...person, imageUrl: result.value.imageDataUri, imageLoading: false };
+            } else {
+                console.error(`Failed to generate image for ${person.name}:`, result.reason);
+                return { ...person, imageLoading: false, imageUrl: undefined };
+            }
+        });
+
+        setMissingPersons(updatedPersons);
+    }
+    
+    if (missingPersons.every(p => p.imageLoading !== false)) {
+        loadPersonImages();
+    }
+  }, []);
   
   const handleDismiss = (id: string) => {
     setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
@@ -187,12 +237,28 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {missingPersonsData.map((person) => (
+              {missingPersons.map((person) => (
                 <TableRow key={person.name}>
                   <TableCell>
-                    <div className="font-medium">{person.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {person.gender} {person.spectacles === 'Yes' ? '• Spectacles' : ''}
+                    <div className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12">
+                            {person.imageLoading ? (
+                                <Skeleton className="w-full h-full rounded-full" />
+                            ) : person.imageUrl ? (
+                                <>
+                                    <AvatarImage src={person.imageUrl} alt={person.name} unoptimized />
+                                    <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+                                </>
+                            ) : (
+                                <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+                            )}
+                        </Avatar>
+                        <div>
+                            <div className="font-medium">{person.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                            {person.gender} {person.spectacles === 'Yes' ? '• Spectacles' : ''}
+                            </div>
+                        </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
