@@ -71,7 +71,7 @@ export default function DashboardPage() {
                 width={1280}
                 height={720}
                 className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                data-ai-hint="train station crowd"
+                data-ai-hint="Bangalore station"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-start p-6">
                  <button aria-label="Play video" className="flex items-center gap-2 text-white rounded-full bg-white/20 px-4 py-2 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
@@ -103,8 +103,8 @@ export default function DashboardPage() {
                   key={train.name}
                   className={cn({
                     'bg-destructive/80 text-destructive-foreground hover:bg-destructive/90': train.variant === 'destructive',
-                    'bg-success/80 text-success-foreground hover:bg-success/90': train.variant === 'success',
-                    'bg-boarding/80 text-boarding-foreground hover:bg-boarding/90': train.variant === 'boarding',
+                    'bg-green-700/80 text-primary-foreground hover:bg-green-700/90': train.variant === 'success',
+                    'bg-green-500/80 text-primary-foreground hover:bg-green-500/90': train.variant === 'boarding',
                   })}
                 >
                   <TableCell>
