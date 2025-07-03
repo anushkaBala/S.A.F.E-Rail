@@ -72,6 +72,13 @@ export function IdentificationForm() {
     };
   };
 
+  const handleResultAction = (action: 'Flagged' | 'Updated' | 'Approved') => {
+    toast({
+      title: `Result ${action}`,
+      description: `The identification result has been ${action.toLowerCase()}.`,
+    });
+  };
+
   return (
     <div className="grid gap-8 md:grid-cols-2">
       <Card>
@@ -173,9 +180,9 @@ export function IdentificationForm() {
         </CardContent>
         {result?.isChildIdentified && (
            <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline"><Flag className="w-4 h-4 mr-2" />Flag</Button>
-            <Button variant="outline"><Edit className="w-4 h-4 mr-2" />Update</Button>
-            <Button className="bg-green-600 hover:bg-green-700"><Check className="w-4 h-4 mr-2" />Approve</Button>
+            <Button variant="outline" onClick={() => handleResultAction('Flagged')}><Flag className="w-4 h-4 mr-2" />Flag</Button>
+            <Button variant="outline" onClick={() => handleResultAction('Updated')}><Edit className="w-4 h-4 mr-2" />Update</Button>
+            <Button className="bg-green-600 hover:bg-green-700" onClick={() => handleResultAction('Approved')}><Check className="w-4 h-4 mr-2" />Approve</Button>
           </CardFooter>
         )}
       </Card>

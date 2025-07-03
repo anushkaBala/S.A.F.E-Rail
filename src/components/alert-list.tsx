@@ -1,3 +1,6 @@
+'use client';
+
+import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-type Alert = {
+export type Alert = {
   id: string;
   location: string;
   timestamp: string;
@@ -21,9 +24,27 @@ type Alert = {
 
 type AlertListProps = {
   alerts: Alert[];
+  onDismiss?: (id: string) => void;
 };
 
-export function AlertList({ alerts }: AlertListProps) {
+export function AlertList({ alerts, onDismiss }: AlertListProps) {
+  const { toast } = useToast();
+
+  const handleDismiss = (id: string) => {
+    if (onDismiss) {
+      onDismiss(id);
+    }
+    toast({ title: 'Alert dismissed' });
+  };
+
+  if (alerts.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        No alerts to display.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {alerts.map((alert) => (
@@ -48,9 +69,9 @@ export function AlertList({ alerts }: AlertListProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
-              <DropdownMenuItem>Acknowledge</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">Dismiss</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast({ title: 'Viewing details for alert...' })}>View Details</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast({ title: 'Alert acknowledged' })}>Acknowledge</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDismiss(alert.id)} className="text-destructive">Dismiss</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

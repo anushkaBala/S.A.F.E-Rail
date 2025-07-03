@@ -1,20 +1,29 @@
+'use client';
+
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BellRing, Users, CheckCircle } from 'lucide-react';
-import { AlertList } from '@/components/alert-list';
+import { AlertList, type Alert } from '@/components/alert-list';
 import { DetectionChart } from '@/components/detection-chart';
 
+const initialAlerts: Alert[] = [
+  { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
+  { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
+  { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'child face' },
+];
+
 export default function DashboardPage() {
+  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
+
   const stats = [
-    { title: 'Active Alerts', value: '12', icon: BellRing, color: 'text-destructive' },
+    { title: 'Active Alerts', value: alerts.length.toString(), icon: BellRing, color: 'text-destructive' },
     { title: 'Children Found', value: '8', icon: Users, color: 'text-primary' },
     { title: 'System Status', value: 'Operational', icon: CheckCircle, color: 'text-green-500' },
   ];
-
-  const alerts = [
-    { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-    { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-    { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'child face' },
-  ];
+  
+  const handleDismiss = (id: string) => {
+    setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
+  };
 
   return (
     <div className="space-y-6">
@@ -47,7 +56,7 @@ export default function DashboardPage() {
             <CardDescription>Active high-priority alerts needing attention.</CardDescription>
           </CardHeader>
           <CardContent>
-            <AlertList alerts={alerts} />
+            <AlertList alerts={alerts} onDismiss={handleDismiss} />
           </CardContent>
         </Card>
       </div>

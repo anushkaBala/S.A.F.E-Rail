@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const pathToTitle: { [key: string]: string } = {
   '/dashboard': 'Dashboard',
@@ -25,6 +26,21 @@ const pathToTitle: { [key: string]: string } = {
 export function AppHeader() {
   const pathname = usePathname();
   const title = pathToTitle[pathname] || 'S.A.F.E Rail';
+  const { toast } = useToast();
+
+  const handleNotificationClick = () => {
+    toast({
+      title: 'No new notifications',
+      description: 'You are all caught up.',
+    });
+  };
+
+  const handleMenuClick = (item: string) => {
+    toast({
+      title: `Navigating to ${item}`,
+      description: 'This is a placeholder action.',
+    });
+  };
 
   return (
     <header className="flex items-center justify-between p-4 bg-card border-b h-16">
@@ -33,7 +49,7 @@ export function AppHeader() {
         <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
       </div>
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={handleNotificationClick}>
           <Bell className="w-5 h-5" />
           <span className="sr-only">Notifications</span>
         </Button>
@@ -49,10 +65,10 @@ export function AppHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleMenuClick('Profile')}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleMenuClick('Settings')}>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleMenuClick('Logout')}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
