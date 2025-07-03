@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { useFlow } from '@genkit-ai/next/client';
 import { identifyChildFromUpload, IdentifyChildFromUploadOutput } from '@/ai/flows/identify-child-from-upload';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,7 +14,7 @@ export function IdentificationForm() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyChildFromUploadOutput | null>(null);
-  const { run: identifyChild, loading } = useFlow(identifyChildFromUpload);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,13 +28,14 @@ export function IdentificationForm() {
 
   const handleSubmit = async () => {
     if (!file) return;
+    setLoading(true);
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
       try {
         const photoDataUri = reader.result as string;
-        const response = await identifyChild({ photoDataUri });
+        const response = await identifyChildFromUpload({ photoDataUri });
         setResult(response);
       } catch (error) {
         console.error(error);
@@ -44,7 +44,18 @@ export function IdentificationForm() {
           title: "Error",
           description: "Failed to analyze the image. Please try again.",
         });
+      } finally {
+        setLoading(false);
       }
+    };
+    reader.onerror = () => {
+      console.error("FileReader error");
+      toast({
+        variant: "destructive",
+        title: "File Read Error",
+        description: "There was an error reading the file.",
+      });
+      setLoading(false);
     };
   };
 
