@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -5,15 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { BellRing, Users, CheckCircle } from 'lucide-react';
 import { AlertList, type Alert } from '@/components/alert-list';
 import { DetectionChart } from '@/components/detection-chart';
+import { useToast } from '@/hooks/use-toast';
+
 
 const initialAlerts: Alert[] = [
-  { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-  { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-  { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'child face' },
+  { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
+  { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child alone', age: 5, gender: 'Male', wearsSpectacles: true, isAlone: true, activity: 'Walking on station', status: 'new' },
+  { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'girl smiling', age: 12, gender: 'Female', wearsSpectacles: true, isAlone: false, activity: 'With an adult', status: 'acknowledged' },
 ];
 
 export default function DashboardPage() {
-  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
+  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
+  const { toast } = useToast();
+
 
   const stats = [
     { title: 'Active Alerts', value: alerts.length.toString(), icon: BellRing, color: 'text-destructive' },
@@ -24,6 +29,16 @@ export default function DashboardPage() {
   const handleDismiss = (id: string) => {
     setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
   };
+  
+  const handleAcknowledge = (id: string) => {
+    setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
+    toast({ title: "Alert Acknowledged", description: "The alert has been moved to the acknowledged list." });
+  };
+  
+  const handleViewDetails = (alert: Alert) => {
+    toast({ title: "Viewing Details", description: `Loading details for ${alert.childName}...` });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -56,10 +71,12 @@ export default function DashboardPage() {
             <CardDescription>Active high-priority alerts needing attention.</CardDescription>
           </CardHeader>
           <CardContent>
-            <AlertList alerts={alerts} onDismiss={handleDismiss} />
+            <AlertList alerts={alerts} onAcknowledge={handleAcknowledge} onDismiss={handleDismiss} onViewDetails={handleViewDetails} />
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
+
+    

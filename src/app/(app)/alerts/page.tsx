@@ -1,38 +1,70 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertList, type Alert } from '@/components/alert-list';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Search, MapPin, Clock, PersonStanding, GitFork, Glasses, ActivityIcon } from 'lucide-react';
 
 const initialAlerts: Alert[] = [
-  { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-  { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-  { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'child face' },
-  { id: '4', location: 'Ticket Office', timestamp: '2024-07-29 14:25:01', confidence: 0.78, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face' },
-  { id: '5', location: 'Platform 2', timestamp: '2024-07-29 14:22:33', confidence: 0.99, imageUrl: 'https://placehold.co/100x100.png', childName: 'John Smith', aiHint: 'child face' },
+  { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/300x200.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
+  { id: '2', location: 'Main Concourse', timestamp: '2024-07-29 14:32:54', confidence: 0.88, imageUrl: 'https://placehold.co/300x200.png', childName: 'Unidentified', aiHint: 'child alone', age: 5, gender: 'Male', wearsSpectacles: true, isAlone: true, activity: 'Walking on station', status: 'new' },
+  { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/300x200.png', childName: 'Jane Doe', aiHint: 'girl smiling', age: 12, gender: 'Female', wearsSpectacles: true, isAlone: false, activity: 'With an adult', status: 'acknowledged' },
+  { id: '4', location: 'Ticket Office', timestamp: '2024-07-29 14:25:01', confidence: 0.78, imageUrl: 'https://placehold.co/300x200.png', childName: 'Unidentified', aiHint: 'boy crying', age: 4, gender: 'Male', wearsSpectacles: false, isAlone: true, activity: 'Near the ticket barrier', status: 'new' },
+  { id: '5', location: 'Platform 2', timestamp: '2024-07-29 14:22:33', confidence: 0.99, imageUrl: 'https://placehold.co/300x200.png', childName: 'John Smith', aiHint: 'child with backpack', age: 9, gender: 'Male', wearsSpectacles: false, isAlone: false, activity: 'Boarding a train', status: 'acknowledged' },
 ];
 
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [ageFilter, setAgeFilter] = useState('');
-  const [genderFilter, setGenderFilter] = useState('');
+  const [ageFilter, setAgeFilter] = useState('all');
+  const [genderFilter, setGenderFilter] = useState('all');
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
       const searchMatch = alert.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           alert.childName.toLowerCase().includes(searchTerm.toLowerCase());
-      // Note: Age and Gender filtering are placeholders as the data doesn't contain this info
-      return searchMatch;
-    });
-  }, [alerts, searchTerm]);
+      
+      const genderMatch = genderFilter === 'all' || alert.gender.toLowerCase() === genderFilter;
 
+      let ageMatch = true;
+      if (ageFilter !== 'all') {
+        const [minAge, maxAge] = ageFilter.split('-').map(Number);
+        ageMatch = alert.age >= minAge && alert.age <= maxAge;
+      }
+      
+      return searchMatch && genderMatch && ageMatch;
+    });
+  }, [alerts, searchTerm, ageFilter, genderFilter]);
+
+  const newAlerts = filteredAlerts.filter(alert => alert.status === 'new');
+  const acknowledgedAlerts = filteredAlerts.filter(alert => alert.status === 'acknowledged');
+
+  const handleAcknowledge = (id: string) => {
+    setAlerts(prevAlerts =>
+      prevAlerts.map(alert =>
+        alert.id === id
+          ? { ...alert, status: alert.status === 'new' ? 'acknowledged' : 'new' }
+          : alert
+      )
+    );
+  };
+  
   const handleDismiss = (id: string) => {
     setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
   };
+  
+  const handleViewDetails = (alert: Alert) => {
+    setSelectedAlert(alert);
+  };
+
 
   return (
     <Card>
@@ -72,12 +104,84 @@ export default function AlertsPage() {
               <SelectItem value="all">All Genders</SelectItem>
               <SelectItem value="male">Male</SelectItem>
               <SelectItem value="female">Female</SelectItem>
-              <SelectItem value="unknown">Unknown</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <AlertList alerts={filteredAlerts} onDismiss={handleDismiss} />
+        
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div>
+                <h3 className="mb-4 text-xl font-semibold tracking-tight">New Alerts ({newAlerts.length})</h3>
+                <AlertList alerts={newAlerts} onAcknowledge={handleAcknowledge} onDismiss={handleDismiss} onViewDetails={handleViewDetails} />
+            </div>
+            <div>
+                <h3 className="mb-4 text-xl font-semibold tracking-tight">Acknowledged Alerts ({acknowledgedAlerts.length})</h3>
+                <AlertList alerts={acknowledgedAlerts} onAcknowledge={handleAcknowledge} onDismiss={handleDismiss} onViewDetails={handleViewDetails} />
+            </div>
+        </div>
+
+        {selectedAlert && (
+            <Dialog open={!!selectedAlert} onOpenChange={() => setSelectedAlert(null)}>
+                <DialogContent className="sm:max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>Alert Details: {selectedAlert.childName}</DialogTitle>
+                        <DialogDescription>
+                            Detailed information for alert ID {selectedAlert.id}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-4">
+                            <Image src={selectedAlert.imageUrl} alt={`Snapshot for alert ${selectedAlert.id}`} width={400} height={300} className="object-cover w-full rounded-lg" data-ai-hint={selectedAlert.aiHint} />
+                            <div className="flex items-center justify-between">
+                                <Badge variant={selectedAlert.confidence > 0.9 ? 'default' : 'secondary'} className="text-base" style={{backgroundColor: selectedAlert.confidence > 0.9 ? "hsl(var(--primary))" : "hsl(var(--secondary))"}}>
+                                    {Math.round(selectedAlert.confidence * 100)}% Match Confidence
+                                </Badge>
+                                <Badge variant={selectedAlert.status === 'new' ? 'destructive' : 'default'} className="capitalize">
+                                    Status: {selectedAlert.status}
+                                </Badge>
+                            </div>
+                        </div>
+                        <div className="space-y-4 text-sm">
+                            <div className="flex items-center gap-3">
+                                <MapPin className="w-5 h-5 text-muted-foreground" />
+                                <div><strong>Location:</strong> {selectedAlert.location}</div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Clock className="w-5 h-5 text-muted-foreground" />
+                                <div><strong>Timestamp:</strong> {new Date(selectedAlert.timestamp).toLocaleString()}</div>
+                            </div>
+                             <div className="flex items-center gap-3">
+                                <ActivityIcon className="w-5 h-5 text-muted-foreground" />
+                                <div><strong>Observed Activity:</strong> {selectedAlert.activity}</div>
+                            </div>
+                            <div className="p-4 border rounded-lg bg-muted/50">
+                                <h4 className="mb-2 font-semibold">Child Details</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                     <div className="flex items-center gap-2">
+                                        <PersonStanding className="w-4 h-4 text-muted-foreground" />
+                                        <span><strong>Gender:</strong> {selectedAlert.gender}</span>
+                                    </div>
+                                    <div><strong>Age:</strong> ~{selectedAlert.age} years</div>
+                                    <div className="flex items-center gap-2">
+                                        <Glasses className="w-4 h-4 text-muted-foreground" />
+                                        <span><strong>Spectacles:</strong> {selectedAlert.wearsSpectacles ? 'Yes' : 'No'}</span>
+                                    </div>
+                                     <div className="flex items-center gap-2">
+                                        <GitFork className="w-4 h-4 text-muted-foreground" />
+                                        <span><strong>Alone:</strong> {selectedAlert.isAlone ? 'Yes' : 'No'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setSelectedAlert(null)}>Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )}
       </CardContent>
     </Card>
   );
 }
+
+    
