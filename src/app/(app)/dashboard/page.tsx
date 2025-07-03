@@ -56,7 +56,7 @@ const initialMissingPersonsData: MissingPerson[] = [
 
 
 export default function DashboardPage() {
-  const [alerts, setAlerts] =useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
+  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
   const { toast } = useToast();
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -83,6 +83,39 @@ export default function DashboardPage() {
     }
     loadImage();
   }, [toast]);
+
+  useEffect(() => {
+    async function loadAlertImages() {
+        setAlerts(prev => prev.map(a => ({ ...a, imageLoading: true })));
+
+        const currentAlerts = initialAlerts.filter(a => a.status === 'new');
+        
+        const imagePromises = currentAlerts.map(alert => {
+            if (alert.gender === 'Unknown') {
+                return Promise.resolve({ imageDataUri: 'https://placehold.co/100x100.png' });
+            }
+            const input: GeneratePersonImageInput = {
+                age: alert.age,
+                gender: alert.gender,
+                wearsSpectacles: alert.wearsSpectacles
+            };
+            return generatePersonImage(input);
+        });
+        const results = await Promise.allSettled(imagePromises);
+
+        const updatedAlerts = currentAlerts.map((alert, index) => {
+            const result = results[index];
+            if (result.status === 'fulfilled' && result.value.imageDataUri) {
+                return { ...alert, imageUrl: result.value.imageDataUri, imageLoading: false };
+            } else {
+                console.error(`Failed to generate image for alert ${alert.id}:`, result.status === 'rejected' ? result.reason : 'No URI');
+                return { ...alert, imageUrl: 'https://placehold.co/100x100.png', imageLoading: false };
+            }
+        });
+        setAlerts(updatedAlerts);
+    }
+    loadAlertImages();
+  }, []);
 
   useEffect(() => {
     async function loadPersonImages() {
@@ -246,7 +279,7 @@ export default function DashboardPage() {
                                 <Skeleton className="w-full h-full rounded-full" />
                             ) : person.imageUrl ? (
                                 <>
-                                    <AvatarImage src={person.imageUrl} alt={person.name} unoptimized />
+                                    <AvatarImage src={person.imageUrl} alt={person.name} />
                                     <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
                                 </>
                             ) : (

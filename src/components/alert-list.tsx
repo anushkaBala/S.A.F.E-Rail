@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { Skeleton } from './ui/skeleton';
 
 export type Alert = {
   id: string;
@@ -29,6 +30,7 @@ export type Alert = {
   isAlone: boolean;
   activity: string;
   status: 'new' | 'acknowledged';
+  imageLoading?: boolean;
 };
 
 type AlertListProps = {
@@ -71,8 +73,14 @@ export function AlertList({ alerts, onAcknowledge, onDismiss, onViewDetails }: A
           )}
         >
           <Avatar className="w-12 h-12 rounded-md">
-            <AvatarImage src={alert.imageUrl} alt={`Alert ${alert.id}`} data-ai-hint={alert.aiHint} />
-            <AvatarFallback>{alert.childName.charAt(0)}</AvatarFallback>
+            {alert.imageLoading ? (
+                <Skeleton className="w-full h-full rounded-md" />
+            ) : (
+                <>
+                    <AvatarImage src={alert.imageUrl} alt={`Alert ${alert.id}`} data-ai-hint={alert.aiHint} />
+                    <AvatarFallback>{alert.childName.charAt(0)}</AvatarFallback>
+                </>
+            )}
           </Avatar>
           <div className="flex-1 ml-4">
             <p className="font-semibold">{alert.childName}</p>
@@ -121,5 +129,3 @@ export function AlertList({ alerts, onAcknowledge, onDismiss, onViewDetails }: A
     </div>
   );
 }
-
-    

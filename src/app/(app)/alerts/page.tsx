@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertList, type Alert } from '@/components/alert-list';
@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, MapPin, Clock, PersonStanding, GitFork, Glasses, ActivityIcon } from 'lucide-react';
+import { generatePersonImage, type GeneratePersonImageInput } from '@/ai/flows/generate-person-image';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const initialAlerts: Alert[] = [
   { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/300x200.png', childName: 'Unidentified', aiHint: 'Indian girl', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
@@ -26,6 +28,38 @@ export default function AlertsPage() {
   const [ageFilter, setAgeFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState('all');
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+
+  useEffect(() => {
+    async function loadAlertImages() {
+        setAlerts(prev => prev.map(a => ({ ...a, imageLoading: true })));
+
+        const imagePromises = initialAlerts.map(alert => {
+            if (alert.gender === 'Unknown') {
+                return Promise.resolve({ imageDataUri: 'https://placehold.co/300x200.png' });
+            }
+            const input: GeneratePersonImageInput = {
+                age: alert.age,
+                gender: alert.gender,
+                wearsSpectacles: alert.wearsSpectacles
+            };
+            return generatePersonImage(input);
+        });
+
+        const results = await Promise.allSettled(imagePromises);
+
+        const updatedAlerts = initialAlerts.map((alert, index) => {
+            const result = results[index];
+            if (result.status === 'fulfilled' && result.value.imageDataUri) {
+                return { ...alert, imageUrl: result.value.imageDataUri, imageLoading: false };
+            } else {
+                console.error(`Failed to generate image for alert ${alert.id}:`, result.status === 'rejected' ? result.reason : 'No URI');
+                return { ...alert, imageUrl: 'https://placehold.co/300x200.png', imageLoading: false };
+            }
+        });
+        setAlerts(updatedAlerts);
+    }
+    loadAlertImages();
+  }, []);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
@@ -130,7 +164,11 @@ export default function AlertsPage() {
                     </DialogHeader>
                     <div className="grid gap-6 md:grid-cols-2">
                         <div className="space-y-4">
-                            <Image src={selectedAlert.imageUrl} alt={`Snapshot for alert ${selectedAlert.id}`} width={400} height={300} className="object-cover w-full rounded-lg" data-ai-hint={selectedAlert.aiHint} />
+                            {selectedAlert.imageLoading ? (
+                                <Skeleton className="w-full rounded-lg aspect-[4/3]" />
+                            ) : (
+                                <Image src={selectedAlert.imageUrl} alt={`Snapshot for alert ${selectedAlert.id}`} width={400} height={300} className="object-cover w-full rounded-lg" data-ai-hint={selectedAlert.aiHint} unoptimized />
+                            )}
                             <div className="flex items-center justify-between">
                                 <Badge variant={selectedAlert.confidence > 0.9 ? 'default' : 'secondary'} className="text-base" style={{backgroundColor: selectedAlert.confidence > 0.9 ? "hsl(var(--primary))" : "hsl(var(--secondary))"}}>
                                     {Math.round(selectedAlert.confidence * 100)}% Match Confidence
@@ -183,5 +221,3 @@ export default function AlertsPage() {
     </Card>
   );
 }
-
-    
