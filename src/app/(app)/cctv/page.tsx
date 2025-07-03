@@ -10,7 +10,7 @@ export default function CctvPage() {
   ];
 
   return (
-    <Card>
+    <Card className="bg-cctv-main">
       <CardHeader>
         <CardTitle>CCTV Analysis</CardTitle>
         <CardDescription>

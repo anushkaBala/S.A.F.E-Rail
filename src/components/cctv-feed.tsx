@@ -106,7 +106,7 @@ export function CctvFeed({ title, location }: CctvFeedProps) {
   };
 
   return (
-    <Card>
+    <Card className="bg-success text-success-foreground">
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>

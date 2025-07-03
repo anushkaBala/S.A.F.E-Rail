@@ -73,6 +73,10 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        'cctv-main': {
+          DEFAULT: 'hsl(var(--cctv-main))',
+          foreground: 'hsl(var(--cctv-main-foreground))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
