@@ -17,14 +17,14 @@ const initialAlerts: Alert[] = [
 ];
 
 const trainData = [
-    { name: 'Jan Shatabdi', platform: '3', departure: '15:10', status: 'On Time', variant: 'secondary' as const },
-    { name: 'Rajdhani Express', platform: '1', departure: '15:25', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Jan Shatabdi', platform: '3', departure: '15:10', status: 'On Time', variant: 'success' as const },
+    { name: 'Rajdhani Express', platform: '1', departure: '15:25', status: 'On Time', variant: 'success' as const },
     { name: 'Damodar Express', platform: '7', departure: '15:40', status: 'Delayed', variant: 'destructive' as const },
-    { name: 'Katihar Malgadi', platform: 'Goods', departure: '15:55', status: 'On Time', variant: 'secondary' as const },
-    { name: 'Vande Bharat', platform: '2', departure: '16:05', status: 'Boarding', variant: 'default' as const },
-    { name: 'Danapur Express', platform: '6', departure: '16:20', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Katihar Malgadi', platform: 'Goods', departure: '15:55', status: 'On Time', variant: 'success' as const },
+    { name: 'Vande Bharat', platform: '2', departure: '16:05', status: 'Boarding', variant: 'boarding' as const },
+    { name: 'Danapur Express', platform: '6', departure: '16:20', status: 'On Time', variant: 'success' as const },
     { name: 'CMT-Siliguri', platform: '4', departure: '16:45', status: 'Delayed', variant: 'destructive' as const },
-    { name: 'Sanghamitra Exp', platform: '5', departure: '17:00', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Sanghamitra Exp', platform: '5', departure: '17:00', status: 'On Time', variant: 'success' as const },
 ];
 
 const missingPersonsData = [
