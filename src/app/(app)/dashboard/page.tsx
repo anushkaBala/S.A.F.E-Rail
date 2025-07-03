@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { TrainFront, Users } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const initialAlerts: Alert[] = [
   { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
@@ -37,7 +38,7 @@ const missingPersonsData = [
 
 
 export default function DashboardPage() {
-  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
+  const [alerts, setAlerts] =useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
   const { toast } = useToast();
   
   const handleDismiss = (id: string) => {
@@ -73,10 +74,17 @@ export default function DashboardPage() {
             </TableHeader>
             <TableBody>
               {trainData.map((train) => (
-                <TableRow key={train.name}>
+                <TableRow 
+                  key={train.name}
+                  className={cn({
+                    'bg-destructive/80 text-destructive-foreground hover:bg-destructive/90': train.variant === 'destructive',
+                    'bg-success/80 text-success-foreground hover:bg-success/90': train.variant === 'success',
+                    'bg-boarding/80 text-boarding-foreground hover:bg-boarding/90': train.variant === 'boarding',
+                  })}
+                >
                   <TableCell>
                     <div className="font-medium flex items-center gap-2">
-                      <TrainFront className="w-4 h-4 text-muted-foreground" />
+                      <TrainFront className="w-4 h-4" />
                       {train.name}
                     </div>
                     <div className="text-sm text-muted-foreground md:hidden">
@@ -85,8 +93,8 @@ export default function DashboardPage() {
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">{train.platform}</TableCell>
                   <TableCell className="hidden md:table-cell">{train.departure}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={train.variant} className="capitalize">{train.status}</Badge>
+                  <TableCell className="text-right capitalize font-medium">
+                    {train.status}
                   </TableCell>
                 </TableRow>
               ))}
