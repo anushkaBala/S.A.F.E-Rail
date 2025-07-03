@@ -10,7 +10,7 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { LayoutDashboard, Video, ScanFace, Bell, Settings, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Video, ScanFace, Bell, Settings, Shield } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -20,14 +20,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-3 p-2">
-            <div className="p-2 rounded-lg bg-primary text-primary-foreground">
-              <ShieldAlert className="w-6 h-6" />
+            <div className="p-2 rounded-lg bg-success text-success-foreground">
+              <Shield className="w-6 h-6" />
             </div>
-            <h1 className="text-xl font-bold group-data-[collapsible=icon]:hidden">S.A.F.E Rail</h1>
+            <h1 className="text-xl font-bold text-success group-data-[collapsible=icon]:hidden">S.A.F.E Rail</h1>
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
+          <SidebarMenu className="divide-y divide-success/30 border-y border-success/30">
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Dashboard">
                 <Link href="/dashboard">
