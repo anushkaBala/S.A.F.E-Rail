@@ -77,6 +77,10 @@ export default {
           DEFAULT: 'hsl(var(--cctv-main))',
           foreground: 'hsl(var(--cctv-main-foreground))',
         },
+        'deep-blue': {
+          DEFAULT: 'hsl(var(--deep-blue))',
+          foreground: 'hsl(var(--deep-blue-foreground))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

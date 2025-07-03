@@ -45,8 +45,10 @@ body {
     --sidebar-accent-foreground: 224 71% 4%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 231 48% 48%;
-    --cctv-main: 210 40% 90%;
-    --cctv-main-foreground: 210 40% 10%;
+    --cctv-main: 222 47% 11%;
+    --cctv-main-foreground: 0 0% 98%;
+    --deep-blue: 231 48% 48%;
+    --deep-blue-foreground: 0 0% 98%;
   }
   .dark {
     --background: 224 71% 4%;
@@ -85,8 +87,10 @@ body {
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 215 28% 17%;
     --sidebar-ring: 0 0% 83.1%;
-    --cctv-main: 220 30% 25%;
+    --cctv-main: 222 47% 11%;
     --cctv-main-foreground: 0 0% 98%;
+    --deep-blue: 231 48% 48%;
+    --deep-blue-foreground: 0 0% 98%;
   }
 }
 

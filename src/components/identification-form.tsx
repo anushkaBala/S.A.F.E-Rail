@@ -120,9 +120,9 @@ export function IdentificationForm() {
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <Card>
+      <Card className="bg-success text-success-foreground">
         <CardHeader>
-          <CardTitle>1. Child Details & Photo</CardTitle>
+          <CardTitle>1. Child Details &amp; Photo</CardTitle>
           <CardDescription>Select an image and provide details to identify a child.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -199,7 +199,7 @@ export function IdentificationForm() {
         </CardFooter>
       </Card>
 
-      <Card className="flex flex-col">
+      <Card className="flex flex-col bg-deep-blue text-deep-blue-foreground">
         <CardHeader>
           <CardTitle>2. Analysis Result</CardTitle>
           <CardDescription>The result of the video analysis will appear here.</CardDescription>
