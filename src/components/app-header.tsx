@@ -58,7 +58,7 @@ export function AppHeader() {
             <Button variant="ghost" className="relative w-8 h-8 rounded-full">
               <Avatar className="w-8 h-8">
                 <AvatarImage src="https://placehold.co/40x40.png" alt="Indian train" data-ai-hint="indian train" />
-                <AvatarFallback>IT</AvatarFallback>
+                <AvatarFallback>A</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
