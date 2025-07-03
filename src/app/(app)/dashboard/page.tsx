@@ -2,13 +2,14 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertList, type Alert } from '@/components/alert-list';
 import { DetectionChart } from '@/components/detection-chart';
 import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { TrainFront, Users } from 'lucide-react';
+import { TrainFront, Users, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const initialAlerts: Alert[] = [
@@ -57,6 +58,30 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Station Overview</CardTitle>
+          <CardDescription>A glimpse into the daily life of our station.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="relative aspect-video w-full rounded-lg overflow-hidden group">
+            <Image
+                src="https://placehold.co/1280x720.png"
+                alt="Station overview video thumbnail"
+                width={1280}
+                height={720}
+                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                data-ai-hint="train station crowd"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-start p-6">
+                 <button aria-label="Play video" className="flex items-center gap-2 text-white rounded-full bg-white/20 px-4 py-2 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
+                    <Play className="w-6 h-6 fill-white" />
+                    <span className="font-semibold">Play Video</span>
+                </button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
        <Card>
         <CardHeader>
           <CardTitle>Live Train Departures</CardTitle>
