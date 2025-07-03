@@ -3,11 +3,12 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BellRing, Users, CheckCircle } from 'lucide-react';
 import { AlertList, type Alert } from '@/components/alert-list';
 import { DetectionChart } from '@/components/detection-chart';
 import { useToast } from '@/hooks/use-toast';
-
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { TrainFront } from 'lucide-react';
 
 const initialAlerts: Alert[] = [
   { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
@@ -15,16 +16,21 @@ const initialAlerts: Alert[] = [
   { id: '3', location: 'Entrance Hall', timestamp: '2024-07-29 14:28:12', confidence: 0.95, imageUrl: 'https://placehold.co/100x100.png', childName: 'Jane Doe', aiHint: 'girl smiling', age: 12, gender: 'Female', wearsSpectacles: true, isAlone: false, activity: 'With an adult', status: 'acknowledged' },
 ];
 
+const trainData = [
+    { name: 'Jan Shatabdi', platform: '3', departure: '15:10', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Rajdhani Express', platform: '1', departure: '15:25', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Damodar Express', platform: '7', departure: '15:40', status: 'Delayed', variant: 'destructive' as const },
+    { name: 'Katihar Malgadi', platform: 'Goods', departure: '15:55', status: 'On Time', variant: 'secondary' as const },
+    { name: 'Vande Bharat', platform: '2', departure: '16:05', status: 'Boarding', variant: 'default' as const },
+    { name: 'Danapur Express', platform: '6', departure: '16:20', status: 'On Time', variant: 'secondary' as const },
+    { name: 'CMT-Siliguri', platform: '4', departure: '16:45', status: 'Delayed', variant: 'destructive' as const },
+    { name: 'Sanghamitra Exp', platform: '5', departure: '17:00', status: 'On Time', variant: 'secondary' as const },
+];
+
+
 export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
   const { toast } = useToast();
-
-
-  const stats = [
-    { title: 'Active Alerts', value: alerts.length.toString(), icon: BellRing, color: 'text-destructive' },
-    { title: 'Children Found', value: '8', icon: Users, color: 'text-primary' },
-    { title: 'System Status', value: 'Operational', icon: CheckCircle, color: 'text-green-500' },
-  ];
   
   const handleDismiss = (id: string) => {
     setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
@@ -42,19 +48,45 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className={`w-4 h-4 text-muted-foreground ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+       <Card>
+        <CardHeader>
+          <CardTitle>Live Train Departures</CardTitle>
+          <CardDescription>Real-time train schedule for the main station.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Train</TableHead>
+                <TableHead className="hidden sm:table-cell">Platform</TableHead>
+                <TableHead className="hidden md:table-cell">Departure</TableHead>
+                <TableHead className="text-right">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {trainData.map((train) => (
+                <TableRow key={train.name}>
+                  <TableCell>
+                    <div className="font-medium flex items-center gap-2">
+                      <TrainFront className="w-4 h-4 text-muted-foreground" />
+                      {train.name}
+                    </div>
+                    <div className="text-sm text-muted-foreground md:hidden">
+                        Departs: {train.departure}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">{train.platform}</TableCell>
+                  <TableCell className="hidden md:table-cell">{train.departure}</TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant={train.variant} className="capitalize">{train.status}</Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
@@ -78,5 +110,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
