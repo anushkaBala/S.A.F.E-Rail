@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertList, type Alert } from '@/components/alert-list';
@@ -9,8 +9,9 @@ import { DetectionChart } from '@/components/detection-chart';
 import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { TrainFront, Users, Play } from 'lucide-react';
+import { TrainFront, Users, Play, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateDashboardImage } from '@/ai/flows/generate-dashboard-image';
 
 const initialAlerts: Alert[] = [
   { id: '1', location: 'Platform 5', timestamp: '2024-07-29 14:35:10', confidence: 0.92, imageUrl: 'https://placehold.co/100x100.png', childName: 'Unidentified', aiHint: 'child face', age: 7, gender: 'Female', wearsSpectacles: false, isAlone: true, activity: 'Waiting on platform', status: 'new' },
@@ -41,6 +42,30 @@ const missingPersonsData = [
 export default function DashboardPage() {
   const [alerts, setAlerts] =useState<Alert[]>(initialAlerts.filter(a => a.status === 'new'));
   const { toast } = useToast();
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadImage() {
+      try {
+        setIsImageLoading(true);
+        const result = await generateDashboardImage();
+        setHeroImageUrl(result.imageDataUri);
+      } catch (error) {
+        console.error("Failed to generate dashboard image:", error);
+        toast({
+          variant: "destructive",
+          title: "Image Generation Failed",
+          description: "Could not load the dashboard's hero image.",
+        });
+        // Fallback to placeholder if generation fails
+        setHeroImageUrl("https://placehold.co/1280x720.png");
+      } finally {
+        setIsImageLoading(false);
+      }
+    }
+    loadImage();
+  }, [toast]);
   
   const handleDismiss = (id: string) => {
     setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== id));
@@ -64,21 +89,34 @@ export default function DashboardPage() {
           <CardDescription>A glimpse into the daily life of our station.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden group">
-            <Image
-                src="https://placehold.co/1280x720.png"
-                alt="Busy Indian train station platform"
-                width={1280}
-                height={720}
-                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                data-ai-hint="train station crowd"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-start p-6">
-                 <button aria-label="Play video" className="flex items-center gap-2 text-white rounded-full bg-white/20 px-4 py-2 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
-                    <Play className="w-6 h-6 fill-white" />
-                    <span className="font-semibold">Play Video</span>
-                </button>
-            </div>
+          <div className="relative aspect-video w-full rounded-lg overflow-hidden group bg-muted">
+            {isImageLoading ? (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                  <span>Generating station image...</span>
+                </div>
+              </div>
+            ) : (
+              heroImageUrl && (
+                <>
+                  <Image
+                    src={heroImageUrl}
+                    alt="AI generated image of a busy Indian train station platform"
+                    unoptimized
+                    width={1280}
+                    height={720}
+                    className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-start p-6">
+                    <button aria-label="Play video" className="flex items-center gap-2 text-white rounded-full bg-white/20 px-4 py-2 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
+                        <Play className="w-6 h-6 fill-white" />
+                        <span className="font-semibold">Play Video</span>
+                    </button>
+                  </div>
+                </>
+              )
+            )}
           </div>
         </CardContent>
       </Card>
