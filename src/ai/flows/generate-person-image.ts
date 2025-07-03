@@ -35,9 +35,12 @@ const generatePersonImageFlow = ai.defineFlow(
     outputSchema: GeneratePersonImageOutputSchema,
   },
   async ({ age, gender, wearsSpectacles }) => {
+    // Be more specific for children's gender
+    const genderTerm = gender.toLowerCase() === 'female' ? 'girl' : (gender.toLowerCase() === 'male' ? 'boy' : gender.toLowerCase());
+
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `Generate a photorealistic, passport-style, forward-facing color portrait of a ${age}-year-old Indian ${gender.toLowerCase()}. ${
+      prompt: `Generate a photorealistic, passport-style, forward-facing color portrait of a ${age}-year-old Indian ${genderTerm}. ${
         wearsSpectacles ? 'The person is wearing spectacles.' : 'The person is not wearing spectacles.'
       } The background should be neutral gray. The expression should be neutral.`,
       config: {
