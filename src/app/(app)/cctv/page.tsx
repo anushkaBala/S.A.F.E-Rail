@@ -1,12 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Image from 'next/image';
+import { CctvFeed } from '@/components/cctv-feed';
 
 export default function CctvPage() {
   const feeds = [
-    { id: 1, title: 'Camera 1 - Platform 5', hint: 'cctv train platform' },
-    { id: 2, title: 'Camera 2 - Main Concourse', hint: 'cctv station concourse' },
-    { id: 3, title: 'Camera 3 - Entrance Hall', hint: 'cctv entrance' },
-    { id: 4, title: 'Camera 4 - Ticket Barrier', hint: 'cctv ticket barrier' },
+    { id: 1, title: 'Camera 1 - Platform 5', location: 'Platform 5' },
+    { id: 2, title: 'Camera 2 - Main Concourse', location: 'Main Concourse' },
+    { id: 3, title: 'Camera 3 - Entrance Hall', location: 'Entrance Hall' },
+    { id: 4, title: 'Camera 4 - Ticket Barrier', location: 'Ticket Barrier' },
   ];
 
   return (
@@ -14,22 +14,13 @@ export default function CctvPage() {
       <CardHeader>
         <CardTitle>CCTV Analysis</CardTitle>
         <CardDescription>
-          This module continuously analyzes live CCTV feeds to detect unaccompanied children in real-time.
+          This module analyzes CCTV feeds to detect unaccompanied children. View live feeds or upload video recordings for analysis.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {feeds.map((feed) => (
-            <Card key={feed.id}>
-              <CardHeader>
-                <CardTitle className="text-lg">{feed.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video bg-muted rounded-md overflow-hidden flex items-center justify-center">
-                  <Image src="https://placehold.co/600x400.png" width={600} height={400} alt={`CCTV Feed ${feed.id}`} className="w-full h-full object-cover" data-ai-hint={feed.hint} />
-                </div>
-              </CardContent>
-            </Card>
+            <CctvFeed key={feed.id} title={feed.title} location={feed.location} />
           ))}
         </div>
       </CardContent>
