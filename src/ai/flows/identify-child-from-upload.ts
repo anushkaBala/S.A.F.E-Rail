@@ -16,6 +16,9 @@ const IdentifyChildFromUploadInputSchema = z.object({
     .describe(
       "A photo of a child, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  age: z.number().optional().describe('The estimated age of the child.'),
+  gender: z.string().optional().describe('The estimated gender of the child.'),
+  wearsSpectacles: z.boolean().optional().describe('Whether the child is wearing spectacles.'),
 });
 export type IdentifyChildFromUploadInput = z.infer<typeof IdentifyChildFromUploadInputSchema>;
 
@@ -46,6 +49,11 @@ const identifyChildFromUploadPrompt = ai.definePrompt({
   prompt: `You are an expert in facial recognition and child identification.
 
 You will receive an image of a person and determine if it is a child. If it is a child, you will attempt to identify the child and provide a confidence score for the identification.
+
+Use the provided details to improve the accuracy of the identification.
+{{#if age}}Estimated Age: {{{age}}}{{/if}}
+{{#if gender}}Gender: {{{gender}}}{{/if}}
+{{#if wearsSpectacles}}Wears Spectacles: Yes{{/if}}
 
 Analyze the following image:
 

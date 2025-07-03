@@ -1,7 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Video } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CctvPage() {
+  const feeds = [
+    { id: 1, title: 'Camera 1 - Platform 5', hint: 'cctv train platform' },
+    { id: 2, title: 'Camera 2 - Main Concourse', hint: 'cctv station concourse' },
+    { id: 3, title: 'Camera 3 - Entrance Hall', hint: 'cctv entrance' },
+    { id: 4, title: 'Camera 4 - Ticket Barrier', hint: 'cctv ticket barrier' },
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -11,12 +18,19 @@ export default function CctvPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg h-96 border-border bg-card">
-          <Video className="w-16 h-16 mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold">Live Feed Simulation</h3>
-          <p className="max-w-md text-sm text-center text-muted-foreground">
-            In a real-world scenario, this dashboard would display multiple live camera feeds with AI-powered overlays highlighting potential events and generating alerts automatically.
-          </p>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {feeds.map((feed) => (
+            <Card key={feed.id}>
+              <CardHeader>
+                <CardTitle className="text-lg">{feed.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video bg-muted rounded-md overflow-hidden flex items-center justify-center">
+                  <Image src="https://placehold.co/600x400.png" width={600} height={400} alt={`CCTV Feed ${feed.id}`} className="w-full h-full object-cover" data-ai-hint={feed.hint} />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </CardContent>
     </Card>
