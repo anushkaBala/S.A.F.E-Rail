@@ -69,7 +69,11 @@ export function AlertList({ alerts, onAcknowledge, onDismiss, onViewDetails }: A
           key={alert.id} 
           className={cn(
             "flex items-center p-3 transition-colors rounded-lg border-l-4",
-            alert.status === 'new' ? 'bg-card hover:bg-accent/50 border-destructive' : 'bg-acknowledged/40 hover:bg-acknowledged/60 border-acknowledged'
+            {
+              "bg-success/20 border-success hover:bg-success/30": alert.status === 'new' && alert.confidence > 0.9,
+              "bg-destructive/20 border-destructive hover:bg-destructive/30": alert.status === 'new' && alert.confidence <= 0.9,
+              "bg-acknowledged/40 border-acknowledged hover:bg-acknowledged/60": alert.status === 'acknowledged',
+            }
           )}
         >
           <Avatar className="w-12 h-12 rounded-md">
