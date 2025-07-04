@@ -45,8 +45,9 @@ body {
     --sidebar-accent-foreground: 224 71% 4%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 231 48% 48%;
-    --cctv-main: 222 83% 45%;
+    --cctv-main: 222 47% 11%;
     --cctv-main-foreground: 0 0% 98%;
+    --acknowledged: 45 93% 70%;
   }
   .dark {
     --background: 224 71% 4%;
@@ -85,8 +86,9 @@ body {
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 215 28% 17%;
     --sidebar-ring: 0 0% 83.1%;
-    --cctv-main: 222 47% 25%;
+    --cctv-main: 222 47% 11%;
     --cctv-main-foreground: 0 0% 98%;
+    --acknowledged: 45 93% 40%;
   }
 }
 

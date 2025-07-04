@@ -69,7 +69,7 @@ export function AlertList({ alerts, onAcknowledge, onDismiss, onViewDetails }: A
           key={alert.id} 
           className={cn(
             "flex items-center p-3 transition-colors rounded-lg border-l-4",
-            alert.status === 'new' ? 'bg-card hover:bg-accent/50 border-destructive' : 'bg-muted/30 hover:bg-muted/60 border-transparent'
+            alert.status === 'new' ? 'bg-card hover:bg-accent/50 border-destructive' : 'bg-acknowledged/40 hover:bg-acknowledged/60 border-acknowledged'
           )}
         >
           <Avatar className="w-12 h-12 rounded-md">

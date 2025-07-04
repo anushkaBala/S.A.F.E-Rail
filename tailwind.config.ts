@@ -53,6 +53,7 @@ export default {
           DEFAULT: 'hsl(var(--boarding))',
           foreground: 'hsl(var(--boarding-foreground))',
         },
+        acknowledged: 'hsl(var(--acknowledged))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
