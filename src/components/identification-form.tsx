@@ -212,13 +212,12 @@ export function IdentificationForm() {
               <p>Searching for child in video from {location}...</p>
             </div>
           ) : result ? (
-            result.isMatchFound && result.matchFrameDataUri ? (
+            result.isMatchFound ? (
               <div className="space-y-4">
                 <div className="space-y-2">
                     <h3 className="text-lg font-semibold">Match Found!</h3>
                     <p className="text-sm text-muted-foreground">A match was found in the video from <strong>{result.location}</strong>.</p>
                 </div>
-                <Image src={result.matchFrameDataUri} alt="Video frame showing the matched child" width={500} height={300} className="w-full rounded-lg object-cover" />
                 <div className="grid grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1">
                         <Label>Match Confidence</Label>
