@@ -34,11 +34,9 @@ const MatchChildInVideoOutputSchema = z.object({
       'The confidence score of the match, from 0 to 1. Only populated if a match is found.'
     )
     .optional(),
-  matchFrameDataUri: z
-    .string()
-    .describe(
-      "A single frame from the video showing the matched child, as a data URI. Only populated if a match is found. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    )
+  isAlone: z
+    .boolean()
+    .describe('Whether the child appears to be alone in the video footage where they are matched.')
     .optional(),
   location: z.string().describe('The location of the CCTV camera where the match was found.'),
 });
@@ -65,8 +63,8 @@ Instructions:
 - Carefully analyze the entire video footage.
 - Compare the faces detected in the video with the face in the provided child's photo.
 - If you find a clear match, set 'isMatchFound' to true.
-- If a match is found, you MUST extract a single, clear frame from the video that shows the child's face and provide it as 'matchFrameDataUri'.
 - If a match is found, provide a confidence score for the match in 'matchConfidence'.
+- If a match is found, determine if the child appears to be alone and set the 'isAlone' field.
 - If no match is found, set 'isMatchFound' to false and leave the other fields empty.
 - The location of the footage is {{{location}}}. Include this in your output.
 `,

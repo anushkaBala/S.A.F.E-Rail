@@ -13,12 +13,12 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Upload, Flag, Check, Edit, ScanFace, Video, UserSearch, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAnalysis } from '@/context/AnalysisContext';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
 export function IdentificationForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -138,9 +138,9 @@ export function IdentificationForm() {
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -214,26 +214,35 @@ export function IdentificationForm() {
           ) : result ? (
             result.isMatchFound ? (
               <div className="space-y-4">
-                <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">Match Found!</h3>
-                    <p className="text-sm text-muted-foreground">A match was found in the video from <strong>{result.location}</strong>.</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="space-y-1">
-                        <Label>Match Confidence</Label>
-                        <Badge variant={result.matchConfidence! > 0.9 ? 'default' : 'secondary'} className="text-lg bg-primary text-primary-foreground w-full justify-center">
-                            {Math.round(result.matchConfidence! * 100)}%
-                        </Badge>
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Provided Details</Label>
-                        <div className="flex flex-wrap gap-2">
-                            {gender && <Badge variant="outline">{gender}</Badge>}
-                            {age && <Badge variant="outline">~{age} yrs</Badge>}
-                            {spectacles && <Badge variant="outline">{spectacles === 'yes' ? 'Spectacles' : 'No Specs'}</Badge>}
-                        </div>
-                    </div>
-                </div>
+                <h3 className="text-lg font-semibold text-center">Match Found!</h3>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                        <TableCell className="font-medium">CCTV Location</TableCell>
+                        <TableCell className="text-right">{result.location}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell className="font-medium">Match Confidence</TableCell>
+                        <TableCell className="text-right">{Math.round(result.matchConfidence! * 100)}%</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell className="font-medium">Gender</TableCell>
+                        <TableCell className="text-right">{gender || 'Not Provided'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell className="font-medium">Age</TableCell>
+                        <TableCell className="text-right">~{age ? `${age} years` : 'Not Provided'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell className="font-medium">Spectacles</TableCell>
+                        <TableCell className="text-right">{spectacles ? (spectacles === 'yes' ? 'Yes' : 'No') : 'Not Provided'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell className="font-medium">Is Alone</TableCell>
+                        <TableCell className="text-right">{result.isAlone === undefined ? 'N/A' : (result.isAlone ? 'Yes' : 'No')}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             ) : (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
